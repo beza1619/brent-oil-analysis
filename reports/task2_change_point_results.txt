@@ -1,0 +1,33 @@
+
+TASK 2: CHANGE POINT ANALYSIS RESULTS
+==================================================
+
+1. DATA ANALYZED:
+   - Period: January 01, 2020 to November 14, 2022
+   - Days analyzed: 729
+   - Price range: $9.12 to $133.18
+
+2. DETECTED CHANGE POINT:
+   - Date: June 02, 2021
+   - Day index: 359
+   - Price on that day: $70.60
+
+3. IMPACT ANALYSIS:
+   - Average price BEFORE: $48.17
+   - Average price AFTER: $92.37
+   - Price increase: 91.8%
+
+4. MODEL STATISTICS:
+   - Mean before change (μ1): $48.06
+   - Mean after change (μ2): $92.32
+   - Standard deviation: $15.64
+
+5. EVENT CORRELATION:
+   - COVID-19 pandemic: 448 days BEFORE change
+   - Negative oil prices: 408 days BEFORE change  
+   - Russia-Ukraine war: 267 days AFTER change
+
+CONCLUSION:
+The model detected a significant structural break in June 2021, with oil prices
+increasing by approximately 92%. This likely reflects post-pandemic economic
+recovery and increasing demand as lockdowns ended worldwide.

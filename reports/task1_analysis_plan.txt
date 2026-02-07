@@ -1,0 +1,38 @@
+# Task 1: Analysis Plan for Brent Oil Prices
+
+## 1. Analysis Steps
+1. Data Loading & Cleaning
+   - Load BrentOilPrices.csv
+   - Convert Date column to datetime
+   - Check for missing values
+
+2. Exploratory Data Analysis (EDA)
+   - Plot price trends over time
+   - Calculate log returns for stationarity
+   - Identify volatility patterns
+
+3. Event Data Compilation
+   - Research key geopolitical/economic events
+   - Create events.csv with dates and descriptions
+
+4. Change Point Analysis
+   - Implement Bayesian change point model using PyMC
+   - Identify structural breaks in price series
+
+5. Statistical Modeling
+   - Quantify impact of change points
+   - Associate changes with events
+
+6. Dashboard Development
+   - Create interactive visualization
+   - Highlight event impacts
+
+## 2. Assumptions & Limitations
+- Correlation ≠ causation
+- Daily prices may miss intra-day volatility
+- External factors not in dataset may influence prices
+
+## 3. Communication Plan
+- Report to stakeholders via PDF report
+- Interactive dashboard for exploration
+- Presentation to decision-makers
