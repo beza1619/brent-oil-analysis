@@ -1,0 +1,35 @@
+BRENT OIL ANALYSIS - FINAL SUBMISSION CHECKLIST
+================================================
+
+✅ TASK 1: LAYING THE FOUNDATION
+   ✓ analysis_plan_final.md (in reports/)
+   ✓ key_events.csv (13 events in data/)
+   ✓ brent_prices_cleaned.csv (in data/)
+   ✓ Assumptions documented
+
+✅ TASK 2: CHANGE POINT MODELING
+   ✓ 03_change_point_analysis.ipynb (in notebooks/)
+   ✓ task2_change_point_results.txt (in reports/)
+   ✓ change_point_results.json (in data/)
+   ✓ Visualizations and interpretations
+
+✅ TASK 3: DASHBOARD
+   ✓ app.py (in dashboard/)
+   ✓ Dashboard screenshots (in reports/)
+   ✓ Working interactive features
+
+✅ ADDITIONAL FILES
+   ✓ README.md (project documentation)
+   ✓ requirements.txt (dependencies)
+   ✓ final_report.md (summary in reports/)
+
+✅ FUNCTIONALITY TEST
+   ✓ Jupyter notebooks run without errors
+   ✓ Dashboard launches with: streamlit run dashboard/app.py
+   ✓ All data files accessible
+
+FINAL STEPS TO SUBMIT:
+1. Take 2-3 dashboard screenshots
+2. Save in reports/dashboard_screenshots/ folder
+3. Push to GitHub or create ZIP file
+4. Submit before Feb 10, 2026, 8:00 PM UTC
