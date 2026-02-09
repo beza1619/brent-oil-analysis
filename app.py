@@ -20,17 +20,51 @@ st.markdown("---")
 # Load data
 @st.cache_data
 def load_data():
-    # Load price data
-    prices_df = pd.read_csv('../data/brent_prices_cleaned.csv', parse_dates=['Date'])
-    
-    # Load events data
-    events_df = pd.read_csv('../data/key_events.csv', parse_dates=['Date'])
-    
-    # Load change point results
-    with open('../data/change_point_results.json', 'r') as f:
-        change_data = json.load(f)
-    
-    return prices_df, events_df, change_data
+    """Load all data with error handling"""
+    try:
+        # Load price data
+        if not os.path.exists('../data/brent_prices_cleaned.csv'):
+            st.error("❌ Data file not found: ../data/brent_prices_cleaned.csv")
+            return None, None, None
+            
+        prices_df = pd.read_csv('../data/brent_prices_cleaned.csv', parse_dates=['Date'])
+        
+        # Validate required columns
+        required_columns = ['Date', 'Price']
+        if not all(col in prices_df.columns for col in required_columns):
+            st.error(f"❌ Missing columns in price data. Required: {required_columns}")
+            return None, None, None
+        
+        # Load events data
+        if not os.path.exists('../data/key_events.csv'):
+            st.warning("⚠️ Events file not found. Using empty events dataframe.")
+            events_df = pd.DataFrame(columns=['Event', 'Date', 'Type', 'Description'])
+        else:
+            events_df = pd.read_csv('../data/key_events.csv', parse_dates=['Date'])
+        
+        # Load change point results
+        if not os.path.exists('../data/change_point_results.json'):
+            st.warning("⚠️ Change point results not found. Using default values.")
+            change_data = {
+                'tau_samples': [359],
+                'mu1_samples': [48.06],
+                'mu2_samples': [92.32],
+                'sigma_samples': [15.64],
+                'dates': [],
+                'prices': [],
+                'change_point': 359,
+                'change_date': '2021-06-02'
+            }
+        else:
+            with open('../data/change_point_results.json', 'r') as f:
+                change_data = json.load(f)
+        
+        st.success("✅ All data loaded successfully!")
+        return prices_df, events_df, change_data
+        
+    except Exception as e:
+        st.error(f"❌ Error loading data: {str(e)}")
+        return None, None, None
 
 # Load all data
 prices_df, events_df, change_data = load_data()
