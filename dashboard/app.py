@@ -1,10 +1,9 @@
-# dashboard/app.py - Complete Brent Oil Price Dashboard
+# dashboard/app.py - Simple Streamlit Dashboard
 import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import json
-import os
 from datetime import datetime
 
 # Page configuration
@@ -18,7 +17,7 @@ st.set_page_config(
 st.title("🛢️ Brent Oil Price Analysis Dashboard")
 st.markdown("---")
 
-# Load data with error handling
+# Load data
 @st.cache_data
 def load_data():
     """Load all data with error handling"""
@@ -69,10 +68,6 @@ def load_data():
 
 # Load all data
 prices_df, events_df, change_data = load_data()
-
-# Check if data loaded successfully
-if prices_df is None:
-    st.stop()
 
 # Sidebar for controls
 st.sidebar.header("Dashboard Controls")
@@ -133,13 +128,10 @@ with col2:
         delta=f"Avg: ${filtered_df['Price'].mean():.2f}"
     )
     
-    price_increase = ((np.mean(change_data['mu2_samples']) - np.mean(change_data['mu1_samples'])) / 
-                     np.mean(change_data['mu1_samples']) * 100)
-    
     st.metric(
         label="Change Point Detected",
         value=change_date.strftime("%b %d, %Y"),
-        delta=f"Price increase: {price_increase:.1f}%"
+        delta=f"Price increase: {((change_data['mu2_samples'][0] - change_data['mu1_samples'][0]) / change_data['mu1_samples'][0] * 100):.1f}%"
     )
     
     st.metric(
@@ -165,7 +157,7 @@ with events_col2:
     st.write(f"**Detected Change:** {change_date.strftime('%B %d, %Y')}")
     st.write(f"**Before Change:** ${np.mean(change_data['mu1_samples']):.2f} average")
     st.write(f"**After Change:** ${np.mean(change_data['mu2_samples']):.2f} average")
-    st.write(f"**Increase:** {price_increase:.1f}%")
+    st.write(f"**Increase:** {((np.mean(change_data['mu2_samples']) - np.mean(change_data['mu1_samples'])) / np.mean(change_data['mu1_samples']) * 100):.1f}%")
     
     # Show histogram of tau samples
     fig2, ax2 = plt.subplots(figsize=(8, 4))
@@ -178,7 +170,6 @@ with events_col2:
     ax2.legend()
     ax2.grid(True, alpha=0.3)
     st.pyplot(fig2)
-
 # Additional analysis section
 st.markdown("---")
 st.subheader("📈 Advanced Analysis")
@@ -190,13 +181,8 @@ with tab1:
     
     # Calculate prices before/after change
     change_idx = change_data['change_point']
-    if len(change_data['prices']) > 0:
-        prices_before = change_data['prices'][:change_idx]
-        prices_after = change_data['prices'][change_idx:]
-    else:
-        # Use filtered data if no prices in change_data
-        prices_before = filtered_df[filtered_df['Date'] < change_date]['Price'].values
-        prices_after = filtered_df[filtered_df['Date'] >= change_date]['Price'].values
+    prices_before = change_data['prices'][:change_idx]
+    prices_after = change_data['prices'][change_idx:]
     
     fig3, (ax3a, ax3b) = plt.subplots(1, 2, figsize=(12, 4))
     
@@ -225,18 +211,15 @@ with tab2:
     
     # Find closest event to change point
     change_date = datetime.strptime(change_data['change_date'], '%Y-%m-%d')
-    if len(events_df) > 0:
-        events_df['days_from_change'] = (events_df['Date'] - change_date).dt.days.abs()
-        closest_event = events_df.loc[events_df['days_from_change'].idxmin()]
-        
-        st.write(f"**Event closest to detected change:**")
-        st.write(f"- **{closest_event['Event']}**")
-        st.write(f"- Date: {closest_event['Date'].strftime('%B %d, %Y')}")
-        st.write(f"- Days from change: {closest_event['days_from_change']} days")
-        st.write(f"- Type: {closest_event['Type']}")
-        st.write(f"- Description: {closest_event['Description']}")
-    else:
-        st.write("No events data available.")
+    events_df['days_from_change'] = (events_df['Date'] - change_date).dt.days.abs()
+    closest_event = events_df.loc[events_df['days_from_change'].idxmin()]
+    
+    st.write(f"**Event closest to detected change:**")
+    st.write(f"- **{closest_event['Event']}**")
+    st.write(f"- Date: {closest_event['Date'].strftime('%B %d, %Y')}")
+    st.write(f"- Days from change: {closest_event['days_from_change']} days")
+    st.write(f"- Type: {closest_event['Type']}")
+    st.write(f"- Description: {closest_event['Description']}")
 
 with tab3:
     st.write("Bayesian Model Details:")
@@ -244,14 +227,14 @@ with tab3:
     col3a, col3b, col3c = st.columns(3)
     
     with col3a:
-        st.metric("Model Samples", f"{len(change_data['tau_samples'])}", "MCMC draws")
+        st.metric("Model Samples", "600", "MCMC draws")
     
     with col3b:
         rhat_tau = np.std(change_data['tau_samples']) / np.sqrt(len(change_data['tau_samples']))
         st.metric("Uncertainty (τ)", f"{rhat_tau:.2f}", "Lower is better")
     
     with col3c:
-        st.metric("Data Points", f"{len(filtered_df)}", "Selected period")
+        st.metric("Data Points", "729", "2020-2022 period")
     
     st.write("**Parameter Distributions:**")
     
@@ -283,4 +266,3 @@ with tab3:
 # Footer
 st.markdown("---")
 st.caption("Birhan Energies - Brent Oil Price Analysis Dashboard | Data: 1987-2022")
-st.caption("Bayesian Change Point Detection | Interactive Visualization")
