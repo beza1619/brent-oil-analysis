@@ -80,7 +80,20 @@ def load_data():
         return None, None, None
 
 # Load all data
-prices_df, events_df, change_data = load_data()
+# Try different path approaches
+try:
+    prices_df = pd.read_csv('data/brent_prices_cleaned.csv', parse_dates=['Date'])
+except:
+    try:
+        prices_df = pd.read_csv('../data/brent_prices_cleaned.csv', parse_dates=['Date'])
+    except:
+        # Create sample data if files not found
+        st.error("Data files not found. Using sample data.")
+        dates = pd.date_range('2020-01-01', '2022-12-31', freq='D')
+        prices_df = pd.DataFrame({
+            'Date': dates,
+            'Price': 50 + 30 * (pd.Series(range(len(dates))) / len(dates))
+        })
 
 # Sidebar for controls
 st.sidebar.header("Dashboard Controls")

@@ -4,21 +4,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import json
+import os
 from datetime import datetime
-# Try to import, show friendly error if fails
-try:
-    import streamlit as st
-    import pandas as pd
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import json
-    import os
-    from datetime import datetime
-except ImportError as e:
-    import streamlit as st
-    st.error(f"Missing dependency: {str(e)}")
-    st.info("Please install: pip install streamlit pandas numpy matplotlib")
-    st.stop()
+
 # Page configuration
 st.set_page_config(
     page_title="Brent Oil Price Analysis",
@@ -39,6 +27,43 @@ def load_data():
         if not os.path.exists('../data/brent_prices_cleaned.csv'):
             st.error("❌ Data file not found: ../data/brent_prices_cleaned.csv")
             return None, None, None
+@st.cache_data
+def load_data():
+    """Load all data with error handling"""
+    try:
+        # Check current directory
+        current_dir = os.getcwd()
+        st.write(f"Current directory: {current_dir}")
+        st.write(f"Files in current directory: {os.listdir('.')}")
+        
+        # Load price data
+        if not os.path.exists('../data/brent_prices_cleaned.csv'):
+            st.error("❌ Data file not found: ../data/brent_prices_cleaned.csv")
+            # Check if data exists elsewhere
+            if os.path.exists('data/brent_prices_cleaned.csv'):
+                st.success("Found in 'data/' folder instead!")
+                prices_df = pd.read_csv('data/brent_prices_cleaned.csv', parse_dates=['Date'])
+            elif os.path.exists('brent_prices_cleaned.csv'):
+                st.success("Found in current folder!")
+                prices_df = pd.read_csv('brent_prices_cleaned.csv', parse_dates=['Date'])
+            else:
+                return None, None, None
+        else:
+            prices_df = pd.read_csv('../data/brent_prices_cleaned.csv', parse_dates=['Date'])        
+        # Load price data
+        if not os.path.exists('../data/brent_prices_cleaned.csv'):
+            st.error("❌ Data file not found: ../data/brent_prices_cleaned.csv")
+            # Check if data exists elsewhere
+            if os.path.exists('data/brent_prices_cleaned.csv'):
+                st.success("Found in 'data/' folder instead!")
+                prices_df = pd.read_csv('data/brent_prices_cleaned.csv', parse_dates=['Date'])
+            elif os.path.exists('brent_prices_cleaned.csv'):
+                st.success("Found in current folder!")
+                prices_df = pd.read_csv('brent_prices_cleaned.csv', parse_dates=['Date'])
+            else:
+                return None, None, None
+        else:
+            prices_df = pd.read_csv('../data/brent_prices_cleaned.csv', parse_dates=['Date'])
             
         prices_df = pd.read_csv('../data/brent_prices_cleaned.csv', parse_dates=['Date'])
         
@@ -80,20 +105,7 @@ def load_data():
         return None, None, None
 
 # Load all data
-# Try different path approaches
-try:
-    prices_df = pd.read_csv('data/brent_prices_cleaned.csv', parse_dates=['Date'])
-except:
-    try:
-        prices_df = pd.read_csv('../data/brent_prices_cleaned.csv', parse_dates=['Date'])
-    except:
-        # Create sample data if files not found
-        st.error("Data files not found. Using sample data.")
-        dates = pd.date_range('2020-01-01', '2022-12-31', freq='D')
-        prices_df = pd.DataFrame({
-            'Date': dates,
-            'Price': 50 + 30 * (pd.Series(range(len(dates))) / len(dates))
-        })
+prices_df, events_df, change_data = load_data()
 
 # Sidebar for controls
 st.sidebar.header("Dashboard Controls")

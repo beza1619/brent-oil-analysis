@@ -1,0 +1,157 @@
+import streamlit as st
+
+# Set up page
+st.set_page_config(page_title="Brent Oil Analysis", layout="wide")
+st.title("BRENT OIL PRICE ANALYSIS - COMPLETE PROJECT")
+st.markdown("---")
+
+# SECTION 1: YOUR KEY FINDING
+st.header("🎯 MAIN RESULT")
+st.success("### Change Point Detected: JUNE 2, 2021")
+st.metric("Price Increase", "94.1%", "48.17 → 92.37 USD")
+
+# Show before/after
+col1, col2 = st.columns(2)
+with col1:
+    st.info("**BEFORE Change Point**\n\n- Average Price: $48.17\n- Period: 359 days\n- Market: Pandemic volatility")
+with col2:
+    st.info("**AFTER Change Point**\n\n- Average Price: $92.37\n- Period: 370 days\n- Market: Post-pandemic recovery")
+
+# SECTION 2: METHODOLOGY
+st.header("🔬 HOW WE FOUND IT")
+st.markdown("""
+**Bayesian Change Point Model (PyMC)**
+```python
+# Key code from your analysis
+tau = pm.DiscreteUniform("tau", lower=0, upper=n_days-1)
+mu1 = pm.Normal("mu1", mu=48.17, sigma=50)  # Before
+mu2 = pm.Normal("mu2", mu=92.37, sigma=50)  # After
+Results from your analysis:
+
+τ (change point): Day 359 = June 2, 2021
+
+μ₁ (before): $48.06 ± 0.99
+
+μ₂ (after): $92.32 ± 1.00
+
+σ (volatility): $15.64 ± 0.41
+""")
+
+SECTION 3: STATISTICAL TESTS
+st.header("📊 STATISTICAL VALIDATION")
+st.markdown("""
+Stationarity Test (ADF)
+
+ADF Statistic: -16.43
+
+p-value: 0.0000
+
+Conclusion: Log returns are stationary (p < 0.05)
+
+Volatility Analysis
+
+Standard deviation of returns: 0.0255
+
+Volatility clustering observed
+
+Heavy-tailed distribution
+""")
+SECTION 4: EVENTS ANALYZED
+st.header("📅 13 KEY EVENTS ANALYZED")
+
+events = """
+
+2008 Financial Crisis (Sep 15, 2008) - Economic
+
+Arab Spring (Dec 17, 2010) - Political
+
+OPEC 2014 Decision (Nov 27, 2014) - Policy
+
+COVID-19 Pandemic (Mar 11, 2020) - Economic
+
+Russia-Ukraine War (Feb 24, 2022) - Conflict
+
+Libya Civil War (Feb 15, 2011) - Conflict
+
+2014 Oil Price Crash (Jun 20, 2014) - Market
+Saudi Drone Attacks (Sep 14, 2019) - Conflict
+
+2020 Negative Prices (Apr 20, 2020) - Market
+
+Iran Sanctions (May 8, 2018) - Political
+
+Iraq War (Mar 20, 2003) - Conflict
+
+Gulf War (Aug 2, 1990) - Conflict
+
+Iran Nuclear Deal (Jul 14, 2015) - Political
+"""
+st.markdown(events)
+
+SECTION 5: PROJECT STRUCTURE
+st.header("📁 PROJECT FILES (on GitHub)")
+st.markdown("""
+brent-oil-analysis/
+├── data/
+│   ├── brent_prices_cleaned.csv    # Your cleaned data
+│   └── key_events.csv              # 13 events
+├── notebooks/
+│   └── 03_change_point_analysis.ipynb  # Your Bayesian analysis
+├── reports/
+│   ├── analysis_plan_final.md      # Task 1
+│   └── task2_change_point_results.txt  # Your results
+└── dashboard/
+    └── app.py                      # This dashboard
+""")
+
+SECTION 6: BUSINESS IMPACT
+st.header("💼 BUSINESS IMPLICATIONS")
+
+tab1, tab2, tab3 = st.tabs(["Investors", "Policymakers", "Companies"])
+
+with tab1:
+st.markdown("""
+For Investors:
+- Trade at structural breaks
+- Hedge around geopolitical events
+- Use June 2021 as regime shift marker
+""")
+
+with tab2:
+st.markdown("""
+For Policymakers:
+- Prepare for oil shocks post-events
+- Strategic reserves timing
+- Energy security planning
+""")
+
+with tab3:
+st.markdown("""
+For Energy Companies:
+- Production planning by regime
+ Cost hedging strategies
+- Supply chain adjustments
+""")
+
+SECTION 7: LIMITATIONS
+st.header("⚠️ LIMITATIONS")
+st.markdown("""
+
+Correlation ≠ causation
+
+Daily data misses intra-day moves
+
+Many external factors not modeled
+
+Single change point model
+""")
+
+FOOTER
+st.markdown("---")
+st.markdown("""
+GitHub: https://github.com/beza1619/brent-oil-analysis
+Full Analysis: Bayesian modeling in Jupyter notebooks
+Result: 94.1% price increase detected June 2, 2021
+
+Birhan Energies Data Science Challenge - Complete Project
+""")
