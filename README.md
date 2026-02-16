@@ -1,6 +1,6 @@
 # 🛢️ Brent Oil Price Change Point Detection
 ### Bayesian Analysis of Geopolitical & Economic Events (1987-2022)
-
+[![CI Pipeline](https://github.com/beza1619/brent-oil-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/beza1619/brent-oil-analysis/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.24%2B-red)](https://streamlit.io)
 [![PyMC](https://img.shields.io/badge/Bayesian-PyMC-green)](https://pymc.io)

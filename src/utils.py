@@ -49,11 +49,26 @@ def calculate_log_returns(prices: Union[List[float], np.ndarray, pd.Series]) -> 
     Returns:
         numpy array of log returns (length = len(prices) - 1)
 
+    Raises:
+        ValueError: if prices has less than 2 elements or contains non-positive values
+        TypeError: if input is not array-like
+
     Example:
         >>> prices = [100, 101, 102]
         >>> calculate_log_returns(prices)
         array([0.00995, 0.00985])
     """
+    # Check for empty input
+    if prices is None:
+        raise ValueError("Prices array cannot be None")
+    
+    # Check if has length attribute
+    if not hasattr(prices, '__len__'):
+        raise TypeError(f"Expected array-like, got {type(prices)}")
+    
+    if len(prices) == 0:
+        raise ValueError("Prices array cannot be empty")
+    
     # Convert to numpy array if needed
     if isinstance(prices, pd.Series):
         prices = prices.values
@@ -62,7 +77,11 @@ def calculate_log_returns(prices: Union[List[float], np.ndarray, pd.Series]) -> 
     elif not isinstance(prices, np.ndarray):
         raise TypeError(f"Expected array-like, got {type(prices)}")
     
-    # Check for negative prices (can't take log of negative)
+    # Check minimum length
+    if len(prices) < 2:
+        raise ValueError(f"Prices array must have at least 2 elements, got {len(prices)}")
+    
+    # Check for negative or zero prices
     if np.any(prices <= 0):
         raise ValueError("Prices must be positive for log return calculation")
     
@@ -89,9 +108,25 @@ def date_to_index(date_series: pd.Series, target_date: datetime) -> int:
         2
     """
     try:
-        # Ensure both are datetime
-        if not isinstance(date_series.dtype, pd.DatetimeTZDtype):
+        # Convert to datetime if not already
+        if not pd.api.types.is_datetime64_any_dtype(date_series):
             date_series = pd.to_datetime(date_series)
+        
+        # Handle empty series
+        if len(date_series) == 0:
+            return -1
+        
+        # Handle timezone-aware series
+        if hasattr(date_series.dt, 'tz') and date_series.dt.tz is not None:
+            # If series has timezone, make target_date timezone-aware
+            if target_date.tzinfo is None:
+                # Convert naive datetime to UTC or series timezone
+                import pytz
+                target_date = target_date.replace(tzinfo=pytz.UTC)
+        else:
+            # If series is naive, make target_date naive
+            if target_date.tzinfo is not None:
+                target_date = target_date.replace(tzinfo=None)
         
         # Find matching date
         mask = date_series == target_date
@@ -143,9 +178,21 @@ def find_nearest_event(
 
     Returns:
         Series containing the nearest event
+
+    Raises:
+        ValueError: if events_df is empty
     """
-    # Calculate absolute difference in days
+    # Check if dataframe is empty
+    if events_df is None or len(events_df) == 0:
+        raise ValueError("Events dataframe is empty")
+    
+    # Make a copy to avoid modifying original
     events_df = events_df.copy()
+    
+    # Ensure date column is datetime
+    events_df[date_column] = pd.to_datetime(events_df[date_column])
+    
+    # Calculate absolute difference in days
     events_df['days_diff'] = abs((events_df[date_column] - target_date).dt.days)
     
     # Find minimum
@@ -171,21 +218,25 @@ def format_business_impact(
     pct_change = ((after_mean - before_mean) / before_mean) * 100
     abs_change = after_mean - before_mean
     
+    # Determine trend word
+    if pct_change > 0:
+        trend = "increased"
+        revenue_impact = "increase"
+    elif pct_change < 0:
+        trend = "decreased"
+        revenue_impact = "decrease"
+    else:
+        trend = "remained unchanged"
+        revenue_impact = "no change"
+    
     impact = (
         f"**Business Impact:**\n"
         f"- Price regime shift detected on {change_date.strftime('%B %d, %Y')}\n"
-        f"- Average price increased from ${before_mean:.2f} to ${after_mean:.2f}\n"
+        f"- Average price {trend} from ${before_mean:.2f} to ${after_mean:.2f}\n"
         f"- Absolute change: ${abs_change:.2f} per barrel\n"
         f"- Relative change: {pct_change:.1f}%\n"
+        f"- This represents a significant {revenue_impact} in revenue potential"
     )
-    
-    if pct_change > 0:
-        impact += "- This represents a significant increase in revenue potential"
-    else:
-        impact += "- This represents a significant decrease in revenue potential"
     
     return impact
 
-# Version info
-__version__ = "1.0.0"
-__author__ = "Your Name"
